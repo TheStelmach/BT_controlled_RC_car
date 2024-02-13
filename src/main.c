@@ -1,5 +1,11 @@
-#include <Arduino.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include "Arduino.h" // TO BE REMOVED, USING FOR DELAY COMMANDS WHILE DEVELOPING SOFTWARE
+
 #include "BDCdrv.h"
+#include "SERVOdrv.h"
+
+uint8_t _loop = 1;
 
 void setup() 
 {
@@ -8,40 +14,18 @@ void setup()
 
 //    BT_init();
 //    BT_connect();
-    bdc_init();
-//    servo_init();
+//    bdc_init();
+    servo_init();
 //    headLightsON();
 //    reverseLightsON();
-//    delay();
 //    reverseLightsOFF();
 
 }
 
-void loop() 
+void loop()
 {
-
-    for (int i = 0; i <= 150; i++)
-    {
-        bdcTurnRight(i);
-        delay(3);
-    }
-
-    for (int i = 150; i >= 0; i--)
-    {
-        bdcTurnRight(i);
-        delay(3);
-    }
-
-    for (int i = 0; i <= 150; i++)
-    {
-        bdcTurnLeft(i);
-        delay(3);
-    }
-
-    for (int i = 150; i >= 0; i--)
-    {
-        bdcTurnLeft(i);
-        delay(3);
-    }
-    
+    OCR2B = 15;
+    delay(2000);
+    OCR2B = 10;
+    delay(2000);
 }
