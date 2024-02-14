@@ -24,8 +24,8 @@ void setup()
 
 void loop()
 {
-    OCR2B = 15;
-    delay(2000);
-    OCR2B = 10;
-    delay(2000);
+    angle_update(45, 'R');
+    delay(100);
+    angle_update(45, 'L');
+    delay(500);
 }

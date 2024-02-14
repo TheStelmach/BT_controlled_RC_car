@@ -50,8 +50,8 @@ void bdcStop()
     if (A_ENABLE != 1 || B_ENABLE != 1) DDRD |= (1<<A_ENABLE) | (1<<B_ENABLE);
     if (OCR0A != 0 || OCR0B != 0)
     {
-        OCR0A = 0; // MAY NEED TO SET AT 255 AFTER TESTING 
-        OCR0B = 0; // MAY NEED TO SET AT 255 AFTER TESTING 
+        OCR0A = 255; // MAY NEED TO SET AT 0 AFTER TESTING 
+        OCR0B = 255; // MAY NEED TO SET AT 0 AFTER TESTING 
     }
 }
 
