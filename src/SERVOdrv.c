@@ -1,35 +1,37 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "SERVOdrv.h"
+// #include "Arduino.h"
 
-static uint16_t position = MIDANGLE;
+static uint16_t position = (uint16_t)MIDANGLE;
 
 void servo_init()
 {
 
-
     TCCR1A |= (1<<WGM11) | (1<<COM1A1);
     TCCR1A &= (~(1<<WGM10)) & (~(1<<COM1A0));
     TCCR1B |= (1<<WGM12) | (1<<WGM13) | (1<<CS11);
-    TCCR1B &= (~(1<<CS10)) & (~(1<<CS12));
-    TIMSK1 |= (1<<TOIE1) | (1<<OCIE1A);
+    TCCR1B &= (~(1<<CS10)) & (~(1<<CS12)); // CONFIGURED TIMER 1 FOR FAST PWM MODE; PRESCALER: 8
 
-    ICR1H = 8 << (TIMERINTERRUPT && 0xFF00);
-    ICR1L = (TIMERINTERRUPT && 0x00FF);
-    DDRB |= (1<<SERVODATA);
+    ICR1H = (TIMERINTERRUPT) >> 8;
+    ICR1L = (TIMERINTERRUPT); // TIMER TOP LIMIT
 
-    OCR1AH = 8 << (MIDANGLE && 0xFF00);
-    OCR1AL = (MIDANGLE && 0x00FF);
+    DDRB |= (1<<SERVODATA); // PWM OUTPUT PIN
+
+    OCR1AH = (MIDANGLE) >> 8;
+    OCR1AL = (MIDANGLE); // INITIAL POSITION IS 90deg
+
+    //WRITE ANOTHER LIB USING INTERRUPTS ONLY
 
 }
 
-void angle_update(uint16_t angle, char dir)
+void angle_update(uint16_t angle, char dir) // UPDATE ANGLE
 {
-    uint16_t degToMicroSec = (((uint16_t)MINANGLE-(uint16_t)MAXANGLE)/180)*angle;
-    if (dir == 'L') position = (uint16_t)MIDANGLE - degToMicroSec;
-    else if (dir == 'R') position = (uint16_t)MIDANGLE + degToMicroSec;
+    uint16_t degToMicroSec = (((uint16_t)MAXANGLE-(uint16_t)MINANGLE)/180)*(angle);
+    if (dir == 'L') position = MIDANGLE - degToMicroSec;
+    else if (dir == 'R') position = MIDANGLE + degToMicroSec;
     else return; // ERROR OCCURS HERE, FUNCTION IS HALTED WITHOUT UPDATING THE POSITION
 
-    OCR1AH = 8 << (position && 0xFF00);
-    OCR1AL = (position && 0x00FF);
+    OCR1AH = (position) >> 8;
+    OCR1AL = (position);
 }

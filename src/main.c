@@ -1,31 +1,34 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "Arduino.h" // TO BE REMOVED, USING FOR DELAY COMMANDS WHILE DEVELOPING SOFTWARE
+#include <Arduino.h> // TO BE REMOVED, USING FOR DELAY COMMANDS WHILE DEVELOPING SOFTWARE
 
 #include "BDCdrv.h"
 #include "SERVOdrv.h"
+#include "UART.h"
 
-uint8_t _loop = 1;
 
 void setup() 
 {
 
-    CLKPR &= (~(1<<CLKPS0)) & (~(1<<CLKPS1)) & (~(1<<CLKPS2)) & (~(1<<CLKPS3)); // CLOCK PRESCALER = 1
-
-//    BT_init();
+//    systick();
+    UART_init(); // not needed, you can use arduino's serial, but works
 //    BT_connect();
-//    bdc_init();
+    bdc_init();
     servo_init();
-//    headLightsON();
-//    reverseLightsON();
-//    reverseLightsOFF();
+//    I2C_init();
+//    speedometer_init();
+//    obstAvoid_init();
+//    smartCruise_init();
+//    lights_init();
 
 }
 
+    char received;
+
 void loop()
 {
-    angle_update(45, 'R');
-    delay(100);
-    angle_update(45, 'L');
-    delay(500);
+
+    unsigned char rcvd = USART_Receive();
+    UART_Transmit(rcvd); 
+    
 }
