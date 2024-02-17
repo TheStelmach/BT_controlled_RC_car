@@ -35,15 +35,6 @@ void bdcTurnRight(uint8_t speed)
     OCR0B = speed; // UP TO 255
 }
 
-
-void bdcCoast()
-{
-    PORTD &= (~(1<<A_EN_PIN)) & (~(1<<B_EN_PIN));
-    OCR0A = 0;
-    OCR0B = 0;
-}
-
-
 void bdcStop()
 {
     if (A_EN_PIN != 1 || B_EN_PIN != 1) DDRD |= (1<<A_EN_PIN) | (1<<B_EN_PIN);

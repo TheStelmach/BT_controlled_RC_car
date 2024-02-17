@@ -7,8 +7,8 @@
 
 void UART_init();
 void UART_Transmit(unsigned char data);
-unsigned char USART_Receive();
-void USART_Flush();
+unsigned char UART_Receive();
+void UART_Flush();
 
 
 #endif

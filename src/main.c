@@ -1,16 +1,17 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <Arduino.h> // TO BE REMOVED, USING FOR DELAY COMMANDS WHILE DEVELOPING SOFTWARE
+//#include <Arduino.h> // TO BE REMOVED, USING FOR DELAY COMMANDS WHILE DEVELOPING SOFTWARE
 
 #include "BDCdrv.h"
 #include "SERVOdrv.h"
 #include "UART.h"
-
+#include "sysTick.h"
+uint16_t millisec = 0;
 
 void setup() 
 {
 
-//    systick();
+    sysTick_init();
     UART_init(); // not needed, you can use arduino's serial, but works
 //    BT_connect();
     bdc_init();
@@ -21,14 +22,20 @@ void setup()
 //    smartCruise_init();
 //    lights_init();
 
-}
 
-    char received;
+}
 
 void loop()
 {
-
-    unsigned char rcvd = USART_Receive();
-    UART_Transmit(rcvd); 
     
+}
+
+ISR (USART_RX_vect)
+{
+    // SEND THE NEW DATA INTO THE SCHEDULER FIFO BUFFER
+}
+
+ISR (TIMER2_COMPA_vect)
+{
+    scheduler(&millisec);
 }

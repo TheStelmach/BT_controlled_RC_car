@@ -32,16 +32,22 @@ void UART_Transmit(unsigned char data)
     UDR0 = data; // Put data into buffer, sends the data 
 }
 
-unsigned char USART_Receive()
+unsigned char UART_Receive()
 { 
     while (!(UCSR0A & (1<<RXC0)));// Wait for data to be received 
     return UDR0;
 }
 
-void USART_Flush()
+void taskList()
+{
+    // PUT RECEIVED DATA INTO A FIFO BUFFER
+}
+
+void UART_Flush()
 {
     unsigned char dummy;
     while (UCSR0A & (1<<RXC0)) dummy = UDR0;
+    dummy = 0;
 }
 
 /*
