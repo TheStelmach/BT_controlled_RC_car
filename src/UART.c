@@ -6,16 +6,15 @@
 void UART_init()
 {
     
-    UCSR0C &= (~(1<<UMSEL01)) & (~(1<<UMSEL00));
-
-    // UCSR0C |= (3<<UPM00); // ODD PARITY MODE 
-
     UBRR0H = ((unsigned char)MYUBRR)>>8; // Set baud rate
     UBRR0L = (unsigned char)MYUBRR;
     
-    UCSR0B = (1<<RXEN0)|(1<<TXEN0); // Enable receiver and transmitter
-    
+    UCSR0A |= (1<<RXC0);
+    UCSR0B = (1<<RXEN0)|(1<<TXEN0) | (1<<RXCIE0); // Enable receiver and transmitter
+    UCSR0C &= (~(1<<UMSEL01)) & (~(1<<UMSEL00));
     UCSR0C |= (1<<USBS0)|(3<<UCSZ00); // Set frame format: 8 data, 2 stop bit
+    // UCSR0C |= (3<<UPM00); // ODD PARITY MODE
+    
 }
 
 void UART_Transmit(unsigned char data)

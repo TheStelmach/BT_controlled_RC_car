@@ -27,15 +27,17 @@ void setup()
 
 void loop()
 {
-    
+    // EXECUTE TASKS FROM FIFO BUFFER
 }
 
 ISR (USART_RX_vect)
 {
-    // SEND THE NEW DATA INTO THE SCHEDULER FIFO BUFFER
+    // UPDATE FIFO BUFFER
 }
 
 ISR (TIMER2_COMPA_vect)
 {
-    scheduler(&millisec);
+    // CHECK ABSOLUTE ENCODER, LIDAR, ENCODER AGAIN, CALCULATE SPEED AND MAKE A DECISION IF NEEDED
+
+    //scheduler(&millisec);
 }
