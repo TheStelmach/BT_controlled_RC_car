@@ -1,7 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "UART.h"
-// #include <Arduino.h>
 
 void UART_init()
 {
@@ -17,7 +16,7 @@ void UART_init()
     
 }
 
-void UART_Transmit(unsigned char data)
+void UART_Transmit(uint8_t data)
 {
     while (!(UCSR0A & (1<<UDRE0))) // Wait for empty transmit buffer
     {
@@ -29,17 +28,15 @@ void UART_Transmit(unsigned char data)
     UCSR0B |= (1<<TXB80);
 
     UDR0 = data; // Put data into buffer, sends the data 
+    UART_Flush();
 }
 
 unsigned char UART_Receive()
 { 
     while (!(UCSR0A & (1<<RXC0)));// Wait for data to be received 
-    return UDR0;
-}
-
-void taskList()
-{
-    // PUT RECEIVED DATA INTO A FIFO BUFFER
+    uint8_t data = UDR0;
+    UART_Flush();
+    return data;
 }
 
 void UART_Flush()
@@ -64,3 +61,4 @@ uint8_t UART_error()
     return err;
 
 }*/
+

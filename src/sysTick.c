@@ -8,13 +8,13 @@
 
 void sysTick_init()
 {
-    //INITIALIZE TIMER 2
+    //INITIALIZE TIMER 2 IN CTC MODE
     TCCR2A |= (1<<WGM21) | (1<<COM2A0);
     TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2A1));
     TCCR2B |= (1<<CS21);
     TCCR2B &= (~(1<<WGM22)) & (~(1<<CS20)) & (~(1<<CS22));
 
-    OCR2A = TICK; // SHOULD BE 1ms
+    OCR2A = TICK; // SHOULD BE 5ms
 
     SREG |= (1<<SREG_I); // GLOBAL INTERRUPT ENABLED
     TIMSK2 |= (1<<OCIE2A); // OUTPUT COMPARE MATCH INTERRUPT ENABLED
@@ -23,25 +23,13 @@ void sysTick_init()
     //When the I-bit in SREG, OCIE2A (Timer/Counter2 compare match interrupt enable), 
     // and OCF2A are set (one), the Timer/Counter2 compare match interrupt is executed.
 
-
-
-    //INITIALIZE OUTPUT COMPARE INTERRUPT
-
-
 }
 
 void scheduler(uint16_t *millisec)
 {
     *millisec++;
-    if (*millisec == 2000)
-    {
-        bdcTurnLeft(40);
-        
-    }
-    else if (*millisec >= 4000)
-    {
-        bdcStop();
-        *millisec = 0;
-    }
+    // CHECK ABSOLUTE ENCODER, LIDAR, ENCODER AGAIN, CALCULATE SPEED AND MAKE A DECISION IF NEEDED
+    
+    if (*millisec >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK EVERY 5 MINUTES
     else return;
 }
