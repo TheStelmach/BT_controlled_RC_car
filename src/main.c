@@ -12,7 +12,7 @@ uint16_t millisec = 0;
 void setup() 
 {
     sysTick_init();
-    UART_init(); // not needed, can use arduino's serial, but works so might as well...
+    UART_init();
 //    BT_connect();
     bdc_init();
     servo_init();
