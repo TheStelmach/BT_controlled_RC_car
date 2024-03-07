@@ -25,7 +25,7 @@ void setup()
 
 }
 
-void loop()
+while (1)
 {
     // EXECUTE TASKS FROM FIFO BUFFER
 }
