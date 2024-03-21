@@ -1,0 +1,4 @@
+C:/Users/moroz/Documents/PlatformIO/Projects/MECH_471/build/CMakeFiles/unity.dir
+C:/Users/moroz/Documents/PlatformIO/Projects/MECH_471/build/CMakeFiles/INSTALL.dir
+C:/Users/moroz/Documents/PlatformIO/Projects/MECH_471/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/moroz/Documents/PlatformIO/Projects/MECH_471/build/CMakeFiles/ZERO_CHECK.dir

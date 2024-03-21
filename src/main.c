@@ -12,7 +12,7 @@ uint16_t millisec = 0;
 void setup() 
 {
     sysTick_init();
-    UART_init();
+    UART_init(); // not needed, can use arduino's serial, but works so might as well...
 //    BT_connect();
     bdc_init();
     servo_init();
@@ -25,7 +25,7 @@ void setup()
 
 }
 
-while (1)
+void loop()
 {
     // EXECUTE TASKS FROM FIFO BUFFER
 }
