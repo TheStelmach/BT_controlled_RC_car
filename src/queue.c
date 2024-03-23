@@ -33,7 +33,6 @@ void queue_write (char data)
 
 void queue_read (char *data)
 {
-
     if(QueueSize > 0) 
     {
 	    *data = QueueStorage[QueueReadPtr++]; 

@@ -9,8 +9,10 @@
 void sysTick_init()
 {
     //INITIALIZE TIMER 2 IN CTC MODE
-    TCCR2A |= (1<<WGM21) | (1<<COM2A0);
-    TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2A1));
+    // TCCR2A |= (1<<WGM21) | (1<<COM2A0);
+    // TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2A1));
+    TCCR2A |= (1<<WGM21) | (1<<COM2A0) | (1<<COM2A1);
+    TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2B1)) & (~(1<<COM2B0));
     TCCR2B |= (1<<CS21);
     TCCR2B &= (~(1<<WGM22)) & (~(1<<CS20)) & (~(1<<CS22));
 
@@ -28,7 +30,9 @@ void sysTick_init()
 void scheduler(uint16_t *millisec)
 {
     if (*millisec >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK EVERY 5 MINUTES
-    else {*millisec++; return;}
+    
+    *millisec++; 
+    return;
 }
 
 void execute(char *data)
@@ -37,35 +41,35 @@ void execute(char *data)
     char command = *data;
     switch (command)
     {
-        default: angle_update(0, 'L'); bdcStop(); break; 
-        case 'Q': bdcTurnLeft(25); break;
-        case 'W': bdcTurnLeft(50); break;
-        case 'E': bdcTurnLeft(75); break;
-        case 'R': bdcTurnLeft(100); break;
-        case 'T': bdcTurnLeft(125); break;
-        case 'Y': bdcTurnLeft(150); break;  
-        case 'U': bdcTurnLeft(175); break;
-        case 'I': bdcTurnLeft(200); break;
-        case 'O': bdcTurnLeft(225); break;
-        case 'P': bdcTurnLeft(250); break;    
+        default: angle_update(0, 'L'); break; 
+        case 'q': UART_Transmit(*data); bdcTurnLeft(25); break;
+        case 'w': UART_Transmit(*data); bdcTurnLeft(50); break;
+        case 'e': UART_Transmit(*data); bdcTurnLeft(75); break;
+        case 'r': UART_Transmit(*data); bdcTurnLeft(100); break;
+        case 't': UART_Transmit(*data); bdcTurnLeft(125); break;
+        case 'y': UART_Transmit(*data); bdcTurnLeft(150); break;  
+        case 'u': UART_Transmit(*data); bdcTurnLeft(175); break;
+        case 'i': UART_Transmit(*data); bdcTurnLeft(200); break;
+        case 'o': UART_Transmit(*data); bdcTurnLeft(225); break;
+        case 'p': UART_Transmit(*data); bdcTurnLeft(250); break;    
 
-        case 'A': bdcStop(); break;
-        case 'S': bdcTurnRight(25); break;
-        case 'D': bdcTurnRight(50); break;
-        case 'F': bdcTurnRight(75); break;
-        case 'G': bdcTurnRight(100); break;
-        case 'H': bdcTurnRight(125); break;  
-        case 'J': bdcTurnRight(150); break;
-        case 'K': bdcTurnRight(175); break;
-        case 'L': bdcTurnRight(200); break; 
+        case 'a': UART_Transmit(*data); bdcStop(); break;
+        case 's': UART_Transmit(*data); bdcTurnRight(25); break;
+        case 'd': UART_Transmit(*data); bdcTurnRight(50); break;
+        case 'f': UART_Transmit(*data); bdcTurnRight(75); break;
+        case 'g': UART_Transmit(*data); bdcTurnRight(100); break;
+        case 'h': UART_Transmit(*data); bdcTurnRight(125); break;  
+        case 'j': UART_Transmit(*data); bdcTurnRight(150); break;
+        case 'k': UART_Transmit(*data); bdcTurnRight(175); break;
+        case 'l': UART_Transmit(*data); bdcTurnRight(200); break; 
 
-        case 'Z': angle_update(90, 'L'); break;
-        case 'X': angle_update(60, 'L'); break;
-        case 'C': angle_update(30, 'L'); break;
-        case 'V': angle_update(0, 'L'); break;
-        case 'B': angle_update(30, 'R'); break;
-        case 'N': angle_update(60, 'R'); break;  
-        case 'M': angle_update(90, 'R'); break;  
+        case 'z': UART_Transmit(*data); angle_update(90, 'L'); break;
+        case 'x': UART_Transmit(*data); angle_update(60, 'L'); break;
+        case 'c': UART_Transmit(*data); angle_update(30, 'L'); break;
+        case 'v': UART_Transmit(*data); angle_update(0, 'L'); break;
+        case 'b': UART_Transmit(*data); angle_update(30, 'R'); break;
+        case 'n': UART_Transmit(*data); angle_update(60, 'R'); break;  
+        case 'm': UART_Transmit(*data); angle_update(90, 'R'); break;  
     }
     UART_Flush();
     data = 0;
