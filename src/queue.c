@@ -16,12 +16,9 @@ void queue_init()
     QueueSize = 0;
 }
 
-uint8_t queue_write (char data)
+void queue_write (char data)
 {
-	if(QueueSize >= QUEUECAPACITY) 
-    {
-		return 1; // FAILURE
-	}
+	if(QueueSize >= QUEUECAPACITY) return; // FAILURE
 	else 
     {
 		QueueStorage[QueueWritePtr++] = data; 
@@ -31,10 +28,10 @@ uint8_t queue_write (char data)
 		}
 		QueueSize++; 
 	}
-    return 0; // SUCCESS
+    return; // SUCCESS
 }
 
-uint8_t queue_read (char *data)
+void queue_read (char *data)
 {
 
     if(QueueSize > 0) 
@@ -45,8 +42,8 @@ uint8_t queue_read (char *data)
 		    QueueReadPtr = 0; 
 	    }
 	    QueueSize--; 
-	    return 0; // SUCCESS 
+	    return; // SUCCESS 
 	}
 
-	else return 1; // FAILURE
+	else {*data = 0; return;} // FAILURE
 }
