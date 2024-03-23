@@ -9,7 +9,7 @@
 #include "queue.h"
 
 
-uint16_t millisec = 0;
+volatile uint16_t millisec = 0;
 
 
 void setup() 
@@ -31,19 +31,14 @@ void setup()
 
 void loop()
 {
-    char command = (nextInQueue(&currQueue, &queue[]));
-    if (command != 0) execute(command);
-
-
+    char data = queue_read(&data);
+    execute(&data);
 }
 
 ISR (USART_RX_vect)
 {
-    char newCommand = UART_Receive();
-    sendToQueue(&currQueue, newCommand, &queue[]);
-
-//    printQueue(task);
-//    UART_Transmit('A');
+    char data = UART_Receive();
+    queue_write(data);
 }
 
 ISR (TIMER2_COMPA_vect)

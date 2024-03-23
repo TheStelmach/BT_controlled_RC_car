@@ -5,6 +5,6 @@
 
 void sysTick_init();
 void scheduler(uint16_t *millisec);
-void execute (char nextCommand);
+void execute(char *data);
 
 #endif

@@ -3,37 +3,50 @@
 #include <stdlib.h>
 #include "queue.h"
 
-void *queue_init()
+uint8_t QueueReadPtr;
+uint8_t QueueWritePtr;
+uint8_t QueueSize;
+
+char QueueStorage[QUEUECAPACITY]; // DATA BUFFER FOR QUEUE
+
+void queue_init()
 {
-    char *queue = (char*) malloc(QUEUELENGTH*sizeof(char));
-    for (int i = 0; i < QUEUELENGTH; i++) queue[i] = 0;
-    static uint8_t currQueue = 0;
+    QueueReadPtr = 0; // ZERO EVERYTHING OUT
+    QueueWritePtr = 0;
+    QueueSize = 0;
 }
 
-uint8_t sendToQueue(uint8_t *currQueue, char newCommand, char *queue[])
+uint8_t queue_write (char data)
 {
-    if (*currQueue < QUEUELENGTH)
+	if(QueueSize >= QUEUECAPACITY) 
     {
-        *queue[*currQueue] = newCommand;
-        *currQueue++;
-        return 1;
-    }
-
-    else return 0;
-}
-
-char nextInQueue(uint8_t *currQueue, char *queue[])
-{
-    if (*currQueue == 0) return 0;
-
-    else
+		return 1; // FAILURE
+	}
+	else 
     {
-        *currQueue--;
-        return *queue[*currQueue + 1];
-    }
+		QueueStorage[QueueWritePtr++] = data; 
+		if(QueueWritePtr >= QUEUECAPACITY) 
+        {
+			QueueWritePtr = 0; 
+		}
+		QueueSize++; 
+	}
+    return 0; // SUCCESS
 }
 
-void flushQueue(char *queue[])
+uint8_t queue_read (char *data)
 {
- for (int i = 0; i < QUEUELENGTH; i++) *queue[i] = 0;
+
+    if(QueueSize > 0) 
+    {
+	    *data = QueueStorage[QueueReadPtr++]; 
+	    if(QueueReadPtr >= QUEUECAPACITY) 
+        {
+		    QueueReadPtr = 0; 
+	    }
+	    QueueSize--; 
+	    return 0; // SUCCESS 
+	}
+
+	else return 1; // FAILURE
 }
