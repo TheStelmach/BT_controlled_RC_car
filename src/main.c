@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include "TWI.h"
 
 #include "BDCdrv.h"
 #include "SERVOdrv.h"
@@ -20,7 +21,7 @@ void setup()
 //    BT_connect();
     bdc_init();
     servo_init();
-//    I2C_init();
+    tw_init(TW_FREQ_100K, 1); // LIBRARY SNATCHED FROM https://github.com/Sovichea/avr-i2c-library/
 //    speedometer_init();
 //    obstAvoid_init();
 //    smartCruise_init();
