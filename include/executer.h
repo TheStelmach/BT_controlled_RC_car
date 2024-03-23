@@ -1,7 +1,7 @@
 #ifndef EXECUTER_H
 #define EXECUTER_H
 
-#define TICK 19999u// PERIOD OF 20ms
+#define TICK 49999u// PERIOD OF 50ms
 
 void sysTick_init();
 void scheduler(uint16_t *millisec);

@@ -44,5 +44,5 @@ void queue_read (char *data)
 	    return; // SUCCESS 
 	}
 
-	else {*data = 0; return;} // FAILURE
+	else *data = 0; // FAILURE
 }

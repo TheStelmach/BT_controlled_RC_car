@@ -4,6 +4,7 @@
 #include "BDCdrv.h"
 #include "SERVOdrv.h"
 #include "UART.h"
+#include "peripherals.h"
 
 
 void sysTick_init()
@@ -11,8 +12,8 @@ void sysTick_init()
     //INITIALIZE TIMER 2 IN CTC MODE
     // TCCR2A |= (1<<WGM21) | (1<<COM2A0);
     // TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2A1));
-    TCCR2A |= (1<<WGM21) | (1<<COM2A0) | (1<<COM2A1);
-    TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2B1)) & (~(1<<COM2B0));
+    TCCR2A |= (1<<WGM21) | (1<<COM2A0);
+    TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2B1)) & (~(1<<COM2B0)) & (~(1<<COM2A1));
     TCCR2B |= (1<<CS21);
     TCCR2B &= (~(1<<WGM22)) & (~(1<<CS20)) & (~(1<<CS22));
 
@@ -29,9 +30,9 @@ void sysTick_init()
 
 void scheduler(uint16_t *millisec)
 {
-    if (*millisec >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK EVERY 5 MINUTES
+    if ((*millisec) >= 20000) {/*toggle_inbuilt_LED();*/ *millisec = 0; return;} // RESTART SYSTEM TICK EVERY 1 second
     
-    *millisec++; 
+    (*millisec)++; 
     return;
 }
 
@@ -40,8 +41,7 @@ void execute(char *data)
     // EVERY BYTE IS A SEPARATE COMMAND, EXAMPLE AT THE BOTTOM
     char command = *data;
     switch (command)
-    {
-        default: angle_update(0, 'L'); break; 
+    { 
         case 'q': UART_Transmit(*data); bdcTurnLeft(25); break;
         case 'w': UART_Transmit(*data); bdcTurnLeft(50); break;
         case 'e': UART_Transmit(*data); bdcTurnLeft(75); break;
@@ -70,6 +70,9 @@ void execute(char *data)
         case 'b': UART_Transmit(*data); angle_update(30, 'R'); break;
         case 'n': UART_Transmit(*data); angle_update(60, 'R'); break;  
         case 'm': UART_Transmit(*data); angle_update(90, 'R'); break;  
+
+        case '5': UART_Transmit(*data); toggle_inbuilt_LED(); break;
+        default: break;
     }
     UART_Flush();
     data = 0;
