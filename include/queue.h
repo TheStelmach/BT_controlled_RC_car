@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #ifndef QUEUE_H
 #define QUEUE_H
 
