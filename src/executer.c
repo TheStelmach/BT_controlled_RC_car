@@ -1,5 +1,3 @@
-// https://github.com/TheStelmach
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "executer.h"
@@ -19,7 +17,7 @@ void sysTick_init()
     TCCR2B |= (1<<CS21);
     TCCR2B &= (~(1<<WGM22)) & (~(1<<CS20)) & (~(1<<CS22));
 
-    OCR2A = TICK; // SHOULD BE 20ms
+    OCR2A = TICK;
 
     SREG |= (1<<SREG_I); // GLOBAL INTERRUPT ENABLED
     TIMSK2 |= (1<<OCIE2A); // OUTPUT COMPARE MATCH INTERRUPT ENABLED
@@ -32,7 +30,7 @@ void sysTick_init()
 
 void scheduler(uint16_t *millisec)
 {
-    if ((*millisec) >= 20000) {/*toggle_inbuilt_LED();*/ *millisec = 0; return;} // RESTART SYSTEM TICK EVERY 1 second
+    if ((*millisec) >= 20000) {/*toggle_inbuilt_LED();*/ *millisec = 0; return;} // RESTART SYSTEM TICK EVERY 100 seconds
     
     (*millisec)++; 
     return;
