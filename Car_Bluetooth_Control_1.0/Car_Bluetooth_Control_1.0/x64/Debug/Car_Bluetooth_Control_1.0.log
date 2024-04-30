@@ -1,6 +1,6 @@
 ﻿  Car_Bluetooth_Control_1.0.cpp
   mybluetooth.cpp
-C:\Users\ali\Desktop\VS_Repos\Car_Bluetooth_Control_1.0\Car_Bluetooth_Control_1.0\mybluetooth.cpp(119,54): warning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
   mycontroller.cpp
+C:\Users\umroot\Documents\Projects\Car_Bluetooth_Control_1.0\Car_Bluetooth_Control_1.0\mybluetooth.cpp(119,54): warning C4267: 'argument': conversion from 'size_t' to 'DWORD', possible loss of data
   Generating Code...
-  Car_Bluetooth_Control_1.0.vcxproj -> C:\Users\ali\Desktop\VS_Repos\Car_Bluetooth_Control_1.0\x64\Debug\Car_Bluetooth_Control_1.0.exe
+  Car_Bluetooth_Control_1.0.vcxproj -> C:\Users\umroot\Documents\Projects\Car_Bluetooth_Control_1.0\x64\Debug\Car_Bluetooth_Control_1.0.exe
