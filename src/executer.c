@@ -6,6 +6,8 @@
 #include "UART.h"
 #include "peripherals.h"
 
+static char buttonA = 0, buttonB = 0, buttonX = 0, buttonY = 0, leftShoulder = 0, rightShoulder = 0, 
+leftTrigger = 0, rightTrigger = 0, padLeft = 0, padRight = 0, padUp = 0, padDown = 0;
 
 void sysTick_init()
 {
@@ -30,7 +32,7 @@ void sysTick_init()
 
 void scheduler(uint16_t *millisec)
 {
-    if ((*millisec) >= 20000) {/*toggle_inbuilt_LED();*/ *millisec = 0; return;} // RESTART SYSTEM TICK EVERY 100 seconds
+    if ((*millisec) >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK WHEN VALUE GETS CLOSE TO OVERFLOWING THE 16 BIT INTEGER
     
     (*millisec)++; 
     return;
@@ -44,47 +46,51 @@ void execute(char *data)
     {
         switch (command)
         { 
-            case 1: UART_Transmit(command); buttonA(); break;
-            case 2: UART_Transmit(command); buttonB(); break;
-            case 3: UART_Transmit(command); buttonX(); break;
-            case 4: UART_Transmit(command); buttonY(); break;
-            case 5: UART_Transmit(command); leftShoulder(); break;
-            case 6: UART_Transmit(command); rightShoulder(); break;
-            case 7: UART_Transmit(command); leftTrigger(); break;  
-            case 8: UART_Transmit(command); rightTrigger(); break;
-            case 9: UART_Transmit(command); padLeft(); break;
-            case 10: UART_Transmit(command); padRight(); break;
-            case 11: UART_Transmit(command); padUp(); break;    
-            case 12: UART_Transmit(command); padDown(); break; 
+            case 1: button_toggle(&buttonA); break;
+            case 2: button_toggle(&buttonB); break;
+            case 3: button_toggle(&buttonX); break;
+            case 4: button_toggle(&buttonY); break;
+            case 5: button_toggle(&leftShoulder); break;
+            case 6: button_toggle(&rightShoulder); break;
+            case 7: button_toggle(&leftTrigger); break;
+            case 8: button_toggle(&rightTrigger); break;
+            case 9: button_toggle(&padLeft); break;
+            case 10: button_toggle(&padRight); break;
+            case 11: button_toggle(&padUp); break;  
+            case 12: button_toggle(&padDown); break; 
             default: break;
         }
     }
 
-    else if (command > 12 && command < 46) // Left joystick left (LX)
+    else if (command >= RIGHTMIN && command < RIGHTMAX) // Left joystick left (LX)
     {
-        uint16_t angle = ((90/32.0)*(44.0 - command));
-        angle_update(angle, 'L');
-    }
-
-    else if (command == 46) angle_update(0, 'R');
-
-    else if (command > 46 && command < 80) // Left joystick right (LX)
-    {
-        uint16_t angle = (90/32.0)*(command - 44);
+        if (command < (RIGHTMIN + RIGHTOFFSET)) command = (RIGHTMIN + RIGHTOFFSET);
+        uint16_t angle = ((90/32.0)*(45 - command));
         angle_update(angle, 'R');
     }
 
-    else if (command >= 80 && command < 96) // Right joystick down (RX)
+    else if (command == LEFTMIN) angle_update(0, 'R');
+
+    else if (command > LEFTMIN && command < LEFTMAX) // Left joystick right (LX)
     {
-        uint8_t speed = (255/16)*(command - 76);
+        if (command > (LEFTMAX - LEFTOFFSET)) command = (LEFTMAX - LEFTOFFSET);
+        uint16_t angle = (90/32.0)*(command - 44);
+        angle_update(angle, 'L');
+    }
+
+    else if (command >= REVERSEMIN && command < REVERSEMAX) // Right joystick down (RX)
+    {
+        if (command < REVERSEMIN + REVERSESPEEDLIMIT) command = (REVERSEMIN + REVERSESPEEDLIMIT);
+        uint8_t speed = (255/16)*(FORWARDMIN - command);
         bdcTurnRight(speed);
     }    
 
-    else if (command == 96) bdcStop();
+    else if (command == FORWARDMIN) bdcStop();
 
-    else if (command > 96 && command < 110) // Right joystick up (RX)
+    else if (command > FORWARDMIN && command < FORWARDMAX) // Right joystick up (RX)
     {
-        uint8_t speed = (255/16)*(command - 93);
+        if (command > (FORWARDMAX - FORWARDSPEEDLIMIT)) command = (FORWARDMAX - FORWARDSPEEDLIMIT);
+        uint8_t speed = (255/16)*(command - FORWARDMIN);
         bdcTurnLeft(speed);
     }
 
@@ -94,74 +100,8 @@ void execute(char *data)
     data = 0;
 }
 
-void buttonA()
+void button_toggle(char *button)
 {
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void buttonB()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void buttonX()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void buttonY()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void leftShoulder()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void rightShoulder()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void leftTrigger()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void rightTrigger()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void padLeft()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void padRight()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void padUp()
-{
-    bdcStop();
-    angle_update(0, 'L');
-}
-
-void padDown()
-{
-    bdcStop();
-    angle_update(0, 'L');
+    if (*button == 0) return 1;
+    else return 0;
 }

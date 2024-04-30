@@ -2,6 +2,8 @@
 #include <avr/interrupt.h>
 #include "speed.h"
 
+uint16_t prevTimeRearWheel = 0.0, prevTimeLeftWheel = 0.0, prevTimeRightWheel = 0.0;
+
 void speed_init()
 {
     // MOTOR ENCODER
@@ -17,50 +19,24 @@ void speed_init()
 
 }
 
-float update_tachometer(float *motorSpeed)
+void update_tachometer(float *motorSpeed, uint16_t millisec) // uint32_t might not be supported, if problems arise - go back to uint16_t
 {
-
-    return 0.0;
+    float speed = 60000/(millisec-prevTimeRearWheel); // REVOLUTIONS PER MINUTE
+    prevTimeRearWheel = millisec;
+    if(speed <= 50.0) *motorSpeed = speed;
+    else *motorSpeed = 0.0;
 }
 
-float update_speedometer(float *actualSpeed)
+void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, uint16_t millisec)
 {
-    return (((30/how_many_micros_right_wheel())+(30/how_many_micros_left_wheel()))/2); 
-    // AVERAGE TIME FOR ONE WHEEL REVOLUTION
+
+    return;
 }
 
-uint16_t how_many_micros_right_wheel()
+void update_speedometer(float *actualSpeed, float leftWheelSpeed, float rightWheelSpeed)
 {
-    uint8_t timerValueStart;
-    uint8_t timerValueEnd;
 
-    if (PINC1 == 0) {while (PINC1 == 0) {};}
-    else {timerValueStart = TCNT2;}
-
-    if (PINC1 == 0) {while (PINC1 == 0) {};}
-    else {timerValueEnd = TCNT2;}
-
-    int16_t howLong = (timerValueEnd - timerValueStart);
-    if (howLong > 0) return howLong; // HOW MANY MICROSECONDS HAVE PASSED
-    else howLong = (TICK - timerValueStart + timerValueEnd);
-    return howLong;
-}
-
-uint16_t how_many_micros_left_wheel()
-{
-    uint8_t timerValueStart;
-    uint8_t timerValueEnd;
-
-    if (PINC1 == 0) {while (PINC1 == 0) {};}
-    else {timerValueStart = TCNT2;}
-
-    if (PINC1 == 0) {while (PINC1 == 0) {};}
-    else {timerValueEnd = TCNT2;}
-
-    int16_t howLong = (timerValueEnd - timerValueStart);
-    if (howLong > 0) return howLong; // HOW MANY MICROSECONDS HAVE PASSED
-    else howLong = (TICK - timerValueStart + timerValueEnd);
-    return howLong;
+    return;
 }
 
 float calculate_slip (float actualSpeed)

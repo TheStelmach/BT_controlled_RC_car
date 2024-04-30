@@ -13,9 +13,8 @@
 
 uint16_t millisec = 0;
 char data = 0; // FOR UART TESTING PURPOSES
-
-float actualSpeed = 0.0; // average speed on the front wheels
 float motorSpeed = 0.0; // speed on the motor shaft, NOT ACCOUNTED FOR ANY TORQUE REDUCTION RATIOS!!!
+float actualSpeed = 0.0, leftWheelSpeed = 0.0, rightWheelSpeed = 0.0;
 
 void setup() 
 {
@@ -34,25 +33,38 @@ void setup()
 }
 
 void loop()
-{
+{ // WHEN NOT IN INTERRUPTS, EXECUTE COMMANDS
     queue_read(&data);
-    execute(&data);
+    if (data != 0) execute(&data);
+    else 
+    {
+    update_speedometer(&actualSpeed, leftWheelSpeed, rightWheelSpeed);
+    calculate_slip(actualSpeed);
+    }
 }
 
 ISR (USART_RX_vect)
-{
+{ // DATA FROM BLUETOOTH
     data = UART_Receive(); // FOR UART TESTING PURPOSES
     queue_write(data);
 }
 
 ISR (TIMER2_COMPA_vect)
-{
+{ // SCHEDULER TICK IN EXECUTER
     scheduler(&millisec);
 }
 
 ISR (INT0_vect)
-{
-    update_tachometer(&motorSpeed); // IF TOO LONG - DISREGARD THE VALUE, THE CAR STOPPED
-    update_speedometer(&actualSpeed);
-    calculate_slip(actualSpeed);
+{ // REAR WHEEL ENCODER PULSE
+    update_tachometer(&motorSpeed, millisec); // IF TOO LONG - DISREGARD THE VALUE, THE CAR STOPPED
+
 }
+
+/*
+ISR (INT1_vect)
+{ // FRONT WHEELS
+// INTERRUPT AND PINS ARE NOT CONFIGURED
+    front_wheels(&leftWheelSpeed, &rightWheelSpeed, millisec)
+
+}
+*/

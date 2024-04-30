@@ -11,13 +11,11 @@
 #define LEFT_ENC DDC0
 #define RIGHT_ENC DDC1
 
-
 void speed_init();
 
-float update_tachometer(float *motorSpeed);
-float update_speedometer(float *actualSpeed);
-uint16_t how_many_micros_right_wheel();
-uint16_t how_many_micros_left_wheel();
+void update_tachometer(float *motorSpeed, uint16_t millisec);
+void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, uint16_t millisec);
+void update_speedometer(float *actualSpeed, float leftWheelSpeed, float rightWheelSpeed);
 float calculate_slip (float actualSpeed);
 
 #endif
