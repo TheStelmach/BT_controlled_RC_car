@@ -40,63 +40,128 @@ void execute(char *data)
 {
     // EVERY BYTE IS A SEPARATE COMMAND, EXAMPLE AT THE BOTTOM
     char command = *data;
-    switch (command)
-    { 
-        case 'q': UART_Transmit(*data); bdcTurnLeft(25); break;
-        case 'w': UART_Transmit(*data); bdcTurnLeft(50); break;
-        case 'e': UART_Transmit(*data); bdcTurnLeft(75); break;
-        case 'r': UART_Transmit(*data); bdcTurnLeft(100); break;
-        case 't': UART_Transmit(*data); bdcTurnLeft(125); break;
-        case 'y': UART_Transmit(*data); bdcTurnLeft(150); break;  
-        case 'u': UART_Transmit(*data); bdcTurnLeft(175); break;
-        case 'i': UART_Transmit(*data); bdcTurnLeft(200); break;
-        case 'o': UART_Transmit(*data); bdcTurnLeft(225); break;
-        case 'p': UART_Transmit(*data); bdcTurnLeft(250); break;    
-
-        case 'a': UART_Transmit(*data); bdcStop(); break;
-        case 's': UART_Transmit(*data); bdcTurnRight(25); break;
-        case 'd': UART_Transmit(*data); bdcTurnRight(50); break;
-        case 'f': UART_Transmit(*data); bdcTurnRight(75); break;
-        case 'g': UART_Transmit(*data); bdcTurnRight(100); break;
-        case 'h': UART_Transmit(*data); bdcTurnRight(125); break;  
-        case 'j': UART_Transmit(*data); bdcTurnRight(150); break;
-        case 'k': UART_Transmit(*data); bdcTurnRight(175); break;
-        case 'l': UART_Transmit(*data); bdcTurnRight(200); break; 
-
-        case 'z': UART_Transmit(*data); angle_update(90, 'L'); break;
-        case 'x': UART_Transmit(*data); angle_update(60, 'L'); break;
-        case 'c': UART_Transmit(*data); angle_update(30, 'L'); break;
-        case 'v': UART_Transmit(*data); angle_update(0, 'L'); break;
-        case 'b': UART_Transmit(*data); angle_update(30, 'R'); break;
-        case 'n': UART_Transmit(*data); angle_update(60, 'R'); break;  
-        case 'm': UART_Transmit(*data); angle_update(90, 'R'); break;  
-
-        case '5': UART_Transmit(*data); toggle_inbuilt_LED(); break;
-        default: break;
+    if (command > 0 && command <= 12)
+    {
+        switch (command)
+        { 
+            case 1: UART_Transmit(command); buttonA(); break;
+            case 2: UART_Transmit(command); buttonB(); break;
+            case 3: UART_Transmit(command); buttonX(); break;
+            case 4: UART_Transmit(command); buttonY(); break;
+            case 5: UART_Transmit(command); leftShoulder(); break;
+            case 6: UART_Transmit(command); rightShoulder(); break;
+            case 7: UART_Transmit(command); leftTrigger(); break;  
+            case 8: UART_Transmit(command); rightTrigger(); break;
+            case 9: UART_Transmit(command); padLeft(); break;
+            case 10: UART_Transmit(command); padRight(); break;
+            case 11: UART_Transmit(command); padUp(); break;    
+            case 12: UART_Transmit(command); padDown(); break; 
+            default: break;
+        }
     }
+
+    else if (command > 12 && command < 46) // Left joystick left (LX)
+    {
+        uint16_t angle = ((90/32.0)*(44.0 - command));
+        angle_update(angle, 'L');
+    }
+
+    else if (command == 46) angle_update(0, 'R');
+
+    else if (command > 46 && command < 80) // Left joystick right (LX)
+    {
+        uint16_t angle = (90/32.0)*(command - 44);
+        angle_update(angle, 'R');
+    }
+
+    else if (command >= 80 && command < 96) // Right joystick down (RX)
+    {
+        uint8_t speed = (255/16)*(command - 76);
+        bdcTurnRight(speed);
+    }    
+
+    else if (command == 96) bdcStop();
+
+    else if (command > 96 && command < 110) // Right joystick up (RX)
+    {
+        uint8_t speed = (255/16)*(command - 93);
+        bdcTurnLeft(speed);
+    }
+
+    else;
+
     UART_Flush();
     data = 0;
 }
 
+void buttonA()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
 
-/* EXAMPLE LOOKUP TABLE --- BYTES IN THE EXAMPLE RANDOMLY SELECTED!!!
-00000000 = 0, do nothing
-00000001 = 1, toggle pin 1
-00000010 = 2, toggle pin 2
-00000011 = 3, toggle pin 3
-.
-.
-.
-.
-01000001 = A, forward speed 10%
-01000010 = B, forward speed 20%
-.
-.
-.
-.
-01110111 = w, reverse speed 30%
-.
-.
-.
-And so on
-*/
+void buttonB()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void buttonX()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void buttonY()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void leftShoulder()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void rightShoulder()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void leftTrigger()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void rightTrigger()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void padLeft()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void padRight()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void padUp()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}
+
+void padDown()
+{
+    bdcStop();
+    angle_update(0, 'L');
+}

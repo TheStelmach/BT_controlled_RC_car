@@ -13,7 +13,6 @@
 
 uint16_t millisec = 0;
 char data = 0; // FOR UART TESTING PURPOSES
-char *dataPtr = &data; // FOR UART TESTING PURPOSES
 
 float actualSpeed = 0.0; // average speed on the front wheels
 float motorSpeed = 0.0; // speed on the motor shaft, NOT ACCOUNTED FOR ANY TORQUE REDUCTION RATIOS!!!
@@ -29,7 +28,6 @@ void setup()
     bdc_init();
     speed_init(); // encoders, speed calculation, slip calculation, PID
     tw_init(TW_FREQ_250K, 1);
-    // BT_connect();
     // obstAvoid_init();
     sei();
 
@@ -43,7 +41,7 @@ void loop()
 
 ISR (USART_RX_vect)
 {
-    *dataPtr = UART_Receive(); // FOR UART TESTING PURPOSES
+    data = UART_Receive(); // FOR UART TESTING PURPOSES
     queue_write(data);
 }
 

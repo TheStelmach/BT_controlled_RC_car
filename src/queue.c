@@ -13,7 +13,7 @@ char QueueStorage[QUEUECAPACITY]; // DATA BUFFER FOR QUEUE
 
 void queue_init()
 {
-    QueueReadPtr = 0; // ZERO EVERYTHING OUT
+    QueueReadPtr = 0;
     QueueWritePtr = 0;
     QueueSize = 0;
 }
@@ -37,7 +37,9 @@ void queue_read (char *data)
 {
     if(QueueSize > 0) 
     {
-	    *data = QueueStorage[QueueReadPtr++]; 
+	    *data = QueueStorage[QueueReadPtr]; // COPY VALUE FROM QUEUE
+		QueueStorage[QueueReadPtr] = 0; // DELETE THE VALUE
+		++QueueReadPtr; // SHIFT THE POSITION IN THE QUEUE
 	    if(QueueReadPtr >= QUEUECAPACITY) 
         {
 		    QueueReadPtr = 0; 
