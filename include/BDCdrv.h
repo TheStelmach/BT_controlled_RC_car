@@ -11,6 +11,7 @@
 #define B_PWM DDD6
 
 void bdc_init();
+void turnMotor(float motorSpeed, char _motorDirection);
 void bdcTurnLeft(uint8_t speed);
 void bdcTurnRight(uint8_t speed);
 void bdcStop();

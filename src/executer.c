@@ -6,8 +6,8 @@
 #include "UART.h"
 #include "peripherals.h"
 
-static char buttonA = 0, buttonB = 0, buttonX = 0, buttonY = 0, leftShoulder = 0, rightShoulder = 0, 
-leftTrigger = 0, rightTrigger = 0, padLeft = 0, padRight = 0, padUp = 0, padDown = 0;
+//static char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0,
+//limitAccel = 0;
 
 void sysTick_init()
 {
@@ -38,7 +38,7 @@ void scheduler(uint16_t *millisec)
     return;
 }
 
-void execute(char *data)
+void execute(char *data, char *motorDirection, float *desiredSpeed)
 {
     // EVERY BYTE IS A SEPARATE COMMAND, EXAMPLE AT THE BOTTOM
     char command = *data;
@@ -46,18 +46,24 @@ void execute(char *data)
     {
         switch (command)
         { 
-            case 1: button_toggle(&buttonA); break;
-            case 2: button_toggle(&buttonB); break;
-            case 3: button_toggle(&buttonX); break;
-            case 4: button_toggle(&buttonY); break;
-            case 5: button_toggle(&leftShoulder); break;
-            case 6: button_toggle(&rightShoulder); break;
-            case 7: button_toggle(&leftTrigger); break;
-            case 8: button_toggle(&rightTrigger); break;
-            case 9: button_toggle(&padLeft); break;
-            case 10: button_toggle(&padRight); break;
-            case 11: button_toggle(&padUp); break;  
-            case 12: button_toggle(&padDown); break; 
+            case 1: 
+                bdcStop();
+                angle_update(0, 'R');
+                break;
+            case 2: button_toggle(&switchPID); break;
+            case 3: button_toggle(&switchTraction); break;
+            case 4: button_toggle(&switchLights); break;
+            case 5: button_toggle(&switchObstacles); break;
+            case 6: 
+                button_toggle(&limitAccel);
+                if (limitAccel == 1) switchPID = 0;
+                break;
+            case 7: break;
+            case 8: break;
+            case 9: break;
+            case 10: break;
+            case 11: break;  
+            case 12: break; 
             default: break;
         }
     }
@@ -82,7 +88,8 @@ void execute(char *data)
     {
         if (command < REVERSEMIN + REVERSESPEEDLIMIT) command = (REVERSEMIN + REVERSESPEEDLIMIT);
         uint8_t speed = (255/16)*(FORWARDMIN - command);
-        bdcTurnRight(speed);
+        if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'F';}
+        else bdcTurnRight(speed);
     }    
 
     else if (command == FORWARDMIN) bdcStop();
@@ -91,7 +98,8 @@ void execute(char *data)
     {
         if (command > (FORWARDMAX - FORWARDSPEEDLIMIT)) command = (FORWARDMAX - FORWARDSPEEDLIMIT);
         uint8_t speed = (255/16)*(command - FORWARDMIN);
-        bdcTurnLeft(speed);
+        if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'B';}
+        else bdcTurnLeft(speed);
     }
 
     else;
@@ -102,6 +110,6 @@ void execute(char *data)
 
 void button_toggle(char *button)
 {
-    if (*button == 0) return 1;
-    else return 0;
+    if (*button == 0) *button =  1;
+    else *button = 0;
 }

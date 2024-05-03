@@ -19,7 +19,6 @@ void bdc_init()
 
 }
 
-
 void bdcTurnLeft(uint8_t speed)
 {
     if (A_ENABLE != 1) DDRD |= (1<<A_ENABLE);
