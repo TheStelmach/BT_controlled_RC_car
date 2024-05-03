@@ -89,7 +89,7 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
         if (command < REVERSEMIN + REVERSESPEEDLIMIT) command = (REVERSEMIN + REVERSESPEEDLIMIT);
         uint8_t speed = (255/16)*(FORWARDMIN - command);
         if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'F';}
-        else bdcTurnRight(speed);
+        else if (switchPID == 0) bdcTurnRight(speed);
     }    
 
     else if (command == FORWARDMIN) bdcStop();
@@ -99,7 +99,7 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
         if (command > (FORWARDMAX - FORWARDSPEEDLIMIT)) command = (FORWARDMAX - FORWARDSPEEDLIMIT);
         uint8_t speed = (255/16)*(command - FORWARDMIN);
         if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'B';}
-        else bdcTurnLeft(speed);
+        else if (switchPID == 0) bdcTurnLeft(speed);
     }
 
     else;

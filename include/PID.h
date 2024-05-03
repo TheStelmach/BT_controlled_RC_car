@@ -10,26 +10,26 @@ typedef struct
 	float tau; // Derivative low-pass filter time constant
 
 	// Output limits
-	float limMin;
-	float limMax;
+	uint8_t limMin;
+	uint8_t limMax;
 	
 	// Integrator limits
-	float limMinInt;
-	float limMaxInt;
+	uint8_t limMinInt;
+	uint8_t limMaxInt;
 
 	float T; // Sample time (in seconds)
 
 	// Controller "memory"
 	float integrator;
-	uint16_t prevDeviation; // Required for integrator
+	uint8_t prevDeviation; // Required for integrator
 	float differentiator;
-	uint16_t prevMotorSpeed; // Required for differentiator
+	uint8_t prevMotorSpeed; // Required for differentiator
 
-	uint16_t out; // Controller output
+	uint8_t out; // Controller output
 
 } PIDController;
 
 void  PIDController_init(PIDController *pid);
-uint8_t PIDController_update(PIDController *pid, uint16_t desiredSpeed, uint16_t motorSpeed);
+uint8_t PIDController_update(PIDController *pid, uint8_t desiredSpeed, uint8_t motorSpeed);
 
 #endif
