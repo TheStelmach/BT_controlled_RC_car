@@ -7,7 +7,7 @@
 #include <string>
 #include <fstream>
 
-#define COM "COM8"
+#define COM "COM5"
 
 extern HANDLE hSerial;
 

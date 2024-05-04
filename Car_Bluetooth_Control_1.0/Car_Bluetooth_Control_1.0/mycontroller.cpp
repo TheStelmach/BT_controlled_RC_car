@@ -139,29 +139,29 @@ unsigned char commandEncoder(int buttonNumber, int buttonValue) {
     unsigned char encodedValue;
     for (int i = 0; i < 12; i++) {
         if ((buttonNumber == i) && (buttonValue != 0)) {
-            encodedValue = static_cast<unsigned char>(i) + 1;
+            encodedValue = static_cast<unsigned char>(i)+1;
             return encodedValue;
         }
     }
     if (buttonNumber == 12) {
         int j = 12 + 32 + (buttonValue / 1024);
-        encodedValue = static_cast<unsigned char>(j) + 1;
+        encodedValue = static_cast<unsigned char>(j)+1;
         return encodedValue;
     }
     else if (buttonNumber == 13) {
         int j = 76 + 32 + (buttonValue / 1024);
-        encodedValue = static_cast<unsigned char>(j) + 1;
+        encodedValue = static_cast<unsigned char>(j)+1;
         return encodedValue;
     }
     else if (buttonNumber == 14) {
         int j = 140 + 32 + (buttonValue / 1024);
-        encodedValue = static_cast<unsigned char>(j) + 4;
+        encodedValue = static_cast<unsigned char>(j)+4;
         return encodedValue;
     }
     else if (buttonNumber == 15) {
         //int j = 204 + 16 + (buttonValue / 2048);
         int j = 76 + 16 + (buttonValue / 2048);
-        encodedValue = static_cast<unsigned char>(j) + 4;
+        encodedValue = static_cast<unsigned char>(j)+4;
         return encodedValue;
     }
 
