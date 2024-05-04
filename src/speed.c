@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 #include "speed.h"
 
-uint16_t prevTimeRearWheel = 0, prevTimeLeftWheel = 0, prevTimeRightWheel = 0;
+int prevTimeRearWheel = 0, prevTimeLeftWheel = 0, prevTimeRightWheel = 0;
 
 void speed_init()
 {
@@ -23,16 +23,17 @@ void speed_init()
 
 }
 
-void update_tachometer(uint8_t *motorSpeed, uint16_t millisec) // uint32_t might not be supported, if problems arise - go back to uint16_t
+void update_tachometer(int *motorSpeed, int millisec) // uint32_t might not be supported, if problems arise - go back to uint16_t
 {
     //float speed = 60000/(millisec-prevTimeRearWheel); // REVOLUTIONS PER MINUTE
-    uint8_t speed = 255/(millisec-prevTimeRearWheel);
+    float speed = (255*79)/(millisec-prevTimeRearWheel);
     prevTimeRearWheel = millisec;
-    if(speed <= 255 && speed >= 10) *motorSpeed = speed;
-    else *motorSpeed = 0.0;
+/*    if(speed >= 0) *motorSpeed = (uint8_t)speed;
+    else *motorSpeed = 0;*/
+    *motorSpeed = speed;
 }
 
-void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, uint16_t millisec)
+void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, int millisec)
 {
 
     return;

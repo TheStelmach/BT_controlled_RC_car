@@ -11,8 +11,8 @@
 
 void speed_init();
 
-void update_tachometer(uint8_t *motorSpeed, uint16_t millisec);
-void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, uint16_t millisec);
+void update_tachometer(int *motorSpeed, int millisec);
+void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, int millisec);
 void update_speedometer(float *actualSpeed, float leftWheelSpeed, float rightWheelSpeed);
 float calculate_slip (float actualSpeed);
 

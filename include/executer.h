@@ -16,11 +16,9 @@
 #define REVERSEMAX 96
 #define REVERSESPEEDLIMIT 7
 
-static char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0,
-limitAccel = 0;
 
 void sysTick_init();
-void scheduler(uint16_t *millisec);
+void scheduler(int *millisec);
 void execute(char *data, char *motorDirection, float *desiredSpeed);
 
 void button_toggle(char *button);

@@ -2,7 +2,6 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "TWI.h" // LIBRARY SNATCHED FROM https://github.com/Sovichea/avr-i2c-library/
 
 #include "BDCdrv.h"
@@ -14,25 +13,28 @@
 #include "speed.h"
 #include "PID.h"
 
-#define PID_KP  1.5f
-#define PID_KI  0.3f
-#define PID_KD  0.15f
-#define PID_TAU 0.02f
-#define PID_LIM_MIN 0u
-#define PID_LIM_MAX  255u
-#define PID_LIM_MIN_INT 0u
-#define PID_LIM_MAX_INT  120u
-#define SAMPLE_TIME_S 0.05f
+#define PID_KP  2.15f
+#define PID_KI  0.05f
+#define PID_KD  0.005f
+#define PID_TAU 0.4f
+#define PID_LIM_MIN 0
+#define PID_LIM_MAX  255
+#define PID_LIM_MIN_INT 0
+#define PID_LIM_MAX_INT  120
 
-uint16_t millisec = 0;
+int millisec = 0;
 char data = 0;
-uint8_t motorSpeed = 0; // speed on the motor shaft, NOT ACCOUNTED FOR ANY TORQUE REDUCTION RATIOS!!!
+int motorSpeed = 0; // speed on the motor shaft, NOT ACCOUNTED FOR ANY TORQUE REDUCTION RATIOS!!!
+int sentValue = 0; // remove after debugging
 char motorDirection;
-uint8_t desiredSpeed = 0;
+int desiredSpeed = 0;
 float actualSpeed = 0.0, leftWheelSpeed = 0.0, rightWheelSpeed = 0.0;
+char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0,
+limitAccel = 0;
+
 
 PIDController pid = { PID_KP, PID_KI, PID_KD, PID_TAU, PID_LIM_MIN,
-    PID_LIM_MAX, PID_LIM_MIN_INT, PID_LIM_MAX_INT, SAMPLE_TIME_S };
+    PID_LIM_MAX, PID_LIM_MIN_INT, PID_LIM_MAX_INT};
 
 void setup() 
 {
@@ -44,18 +46,32 @@ void setup()
     servo_init();
     bdc_init();
     speed_init();
-    PIDController_init(&pid);
+    PIDController_init(&pid, millisec);
     tw_init(TW_FREQ_250K, 1);
     // obstAvoid_init();
     sei();
-
 }
 
 void loop()
 { // WHEN NOT IN INTERRUPTS, EXECUTE COMMANDS
-    motorSpeed = 50;
-    desiredSpeed = 180;
-    bdcTurnRight(PIDController_update(&pid, desiredSpeed, motorSpeed));
+    queue_read(&data);
+    //update_speedometer(&actualSpeed, leftWheelSpeed, rightWheelSpeed);
+    //calculate_slip(actualSpeed);
+    if (switchPID != 1) 
+    {
+        PORTB |= (1 << PB5);
+        if (motorDirection == 'F') 
+        {
+            bdcTurnRight(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+        }
+        else if (motorDirection == 'B')
+        {
+            bdcTurnLeft(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+        }
+        else bdcStop();
+    }
+    else PORTB &= (~(1 << PB5));
+    execute(&data, &motorDirection, &desiredSpeed);
 
 }
 
@@ -73,7 +89,6 @@ ISR (TIMER2_COMPA_vect)
 ISR (INT1_vect)
 { // REAR WHEEL ENCODER PULSE
     update_tachometer(&motorSpeed, millisec); // IF TOO LONG - DISREGARD THE VALUE, THE CAR STOPPED
-    PORTB ^= (1 << PB5); // TOGGLES ON-BOARD LED FOR INDICATION
 }
 
 /*

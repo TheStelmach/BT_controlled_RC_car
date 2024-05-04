@@ -6,8 +6,8 @@
 #include "UART.h"
 #include "peripherals.h"
 
-//static char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0,
-//limitAccel = 0;
+extern char switchPID, switchTraction, switchLights, switchObstacles,
+limitAccel;
 
 void sysTick_init()
 {
@@ -30,7 +30,7 @@ void sysTick_init()
 
 }
 
-void scheduler(uint16_t *millisec)
+void scheduler(int *millisec)
 {
     if ((*millisec) >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK WHEN VALUE GETS CLOSE TO OVERFLOWING THE 16 BIT INTEGER
     
@@ -87,19 +87,19 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
     else if (command >= REVERSEMIN && command < REVERSEMAX) // Right joystick down (RX)
     {
         if (command < REVERSEMIN + REVERSESPEEDLIMIT) command = (REVERSEMIN + REVERSESPEEDLIMIT);
-        uint8_t speed = (255/16)*(FORWARDMIN - command);
-        if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'F';}
-        else if (switchPID == 0) bdcTurnRight(speed);
+        int speed = (255/16)*(FORWARDMIN - command);
+        if (switchPID != 1) {*desiredSpeed = speed; *motorDirection = 'F';}
+        else bdcTurnRight(speed);
     }    
 
-    else if (command == FORWARDMIN) bdcStop();
+    else if (command == FORWARDMIN) {*motorDirection = 0; *desiredSpeed = 0; bdcStop();}
 
     else if (command > FORWARDMIN && command < FORWARDMAX) // Right joystick up (RX)
     {
         if (command > (FORWARDMAX - FORWARDSPEEDLIMIT)) command = (FORWARDMAX - FORWARDSPEEDLIMIT);
-        uint8_t speed = (255/16)*(command - FORWARDMIN);
-        if (switchPID == 1) {*desiredSpeed = speed; *motorDirection = 'B';}
-        else if (switchPID == 0) bdcTurnLeft(speed);
+        int speed = (255/16)*(command - FORWARDMIN);
+        if (switchPID != 1) {*desiredSpeed = speed; *motorDirection = 'B';}
+        else bdcTurnLeft(speed);
     }
 
     else;
