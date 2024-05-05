@@ -22,16 +22,10 @@
 #define PID_LIM_MIN_INT 0
 #define PID_LIM_MAX_INT  120
 
-int millisec = 0;
-char data = 0;
-int motorSpeed = 0; // speed on the motor shaft, NOT ACCOUNTED FOR ANY TORQUE REDUCTION RATIOS!!!
-int sentValue = 0; // remove after debugging
-char motorDirection;
-int desiredSpeed = 0;
-float actualSpeed = 0.0, leftWheelSpeed = 0.0, rightWheelSpeed = 0.0;
-char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0,
-limitAccel = 0;
-
+char motorDirection, data = 0;
+char switchPID = 0, switchTraction = 0, switchLights = 0, switchObstacles = 0, limitAccel = 0;
+int millisec = 0, counter = 0, motorSpeed = 0, sentValue = 0, 
+    desiredSpeed = 0, actualSpeed = 0, leftWheelSpeed = 0, rightWheelSpeed = 0;
 
 PIDController pid = { PID_KP, PID_KI, PID_KD, PID_TAU, PID_LIM_MIN,
     PID_LIM_MAX, PID_LIM_MIN_INT, PID_LIM_MAX_INT};
@@ -55,24 +49,48 @@ void setup()
 void loop()
 { // WHEN NOT IN INTERRUPTS, EXECUTE COMMANDS
     queue_read(&data);
-    //update_speedometer(&actualSpeed, leftWheelSpeed, rightWheelSpeed);
-    //calculate_slip(actualSpeed);
-    if (switchPID != 1) 
+
+    if (switchPID != 0) 
     {
-        PORTB |= (1 << PB5);
+        if (motorDirection == 'F') 
+            bdcTurnRight(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+        else if (motorDirection == 'B')
+            bdcTurnLeft(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+        else bdcStop();
+    }
+
+    if (switchTraction != 0)
+    { 
+        float tractionLimit = (1 - (calculate_slip(actualSpeed,motorSpeed)) * 0.5) * motorSpeed; // IF SLIP OCCURS, SLOW THE MOTOR DOWN
+        if (tractionLimit <= 0.0) tractionLimit = 0;
+        else if (tractionLimit > 255.0) tractionLimit = 255;
+        if (motorDirection == 'F') bdcTurnRight((uint8_t)tractionLimit);
+        else if (motorDirection == 'B') bdcTurnLeft((uint8_t)tractionLimit);
+        else bdcStop();
+    }
+
+    if (limitAccel != 0)
+    {
         if (motorDirection == 'F') 
         {
-            bdcTurnRight(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+            if (motorSpeed != desiredSpeed && (motorSpeed < 255) && (motorSpeed >= 0)) 
+            {
+                if (motorSpeed > desiredSpeed) bdcTurnRight((uint8_t)(((motorSpeed + desiredSpeed) / 2) + 1));
+                if (motorSpeed < desiredSpeed) bdcTurnRight((uint8_t)(((motorSpeed + desiredSpeed) / 2) + 1));
+            }
         }
-        else if (motorDirection == 'B')
+        else if (motorDirection == 'B') 
         {
-            bdcTurnLeft(motorSpeed + PIDController_update(&pid, desiredSpeed, motorSpeed, millisec));
+            if (motorSpeed != desiredSpeed && (motorSpeed < 255) && (motorSpeed >= 0)) 
+            {
+                if (motorSpeed > desiredSpeed) bdcTurnLeft((uint8_t)(((motorSpeed + desiredSpeed) / 2) + 1));
+                if (motorSpeed < desiredSpeed) bdcTurnLeft((uint8_t)(((motorSpeed + desiredSpeed) / 2) + 1));
+            }
         }
         else bdcStop();
     }
-    else PORTB &= (~(1 << PB5));
-    execute(&data, &motorDirection, &desiredSpeed);
 
+    execute(&data, &motorDirection, &desiredSpeed);
 }
 
 ISR (USART_RX_vect)
@@ -82,8 +100,8 @@ ISR (USART_RX_vect)
 }
 
 ISR (TIMER2_COMPA_vect)
-{ // SCHEDULER TICK IN EXECUTER
-    scheduler(&millisec);
+{ // SYSTICK IN EXECUTER
+    sysTick(&millisec);
 }
 
 ISR (INT1_vect)
@@ -91,11 +109,23 @@ ISR (INT1_vect)
     update_tachometer(&motorSpeed, millisec); // IF TOO LONG - DISREGARD THE VALUE, THE CAR STOPPED
 }
 
-/*
 ISR (INT0_vect)
 { // FRONT WHEELS
-// INTERRUPT AND PINS ARE NOT CONFIGURED
-    front_wheels(&leftWheelSpeed, &rightWheelSpeed, millisec)
-
+    front_wheels(&leftWheelSpeed, &rightWheelSpeed, millisec);
+    actualSpeed = update_speedometer(leftWheelSpeed, rightWheelSpeed);
 }
+
+/*
+
+Nazar
+
+- Make a video, as long as everything works
+- Check the report
+
+John
+- Debug offense and defense of 472
+- Run a simulation test
+- Make a video
+- Check the report
+
 */

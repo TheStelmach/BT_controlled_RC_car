@@ -2,18 +2,18 @@
 #define SPEED_H
 
 // MOTOR ENCODER
-#define INTERRUPT_PIN DDD3 // DRIVER ENABLE PIN A
-#define INTERRUPT_PIN_ENABLE PD3 // PIN A OUTPUT
+#define INTERRUPT1_PIN DDD3 // DRIVER ENABLE PIN A
+#define INTERRUPT1_PIN_ENABLE PD3 // PIN A OUTPUT
 
 // WHEEL ENCODERS
-#define LEFT_ENC DDC0
-#define RIGHT_ENC DDC1
+#define INTERRUPT0_PIN DDD2 // DRIVER ENABLE PIN A
+#define INTERRUPT0_PIN_ENABLE PD2 // PIN A OUTPUT
 
 void speed_init();
 
 void update_tachometer(int *motorSpeed, int millisec);
-void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, int millisec);
-void update_speedometer(float *actualSpeed, float leftWheelSpeed, float rightWheelSpeed);
-float calculate_slip (float actualSpeed);
+void front_wheels(int *leftWheelSpeed, int *rightWheelSpeed, int millisec);
+int update_speedometer(int leftWheelSpeed, int rightWheelSpeed);
+float calculate_slip (int actualSpeed, int motorSpeed);
 
 #endif

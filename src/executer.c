@@ -24,13 +24,9 @@ void sysTick_init()
     SREG |= (1<<SREG_I); // GLOBAL INTERRUPT ENABLED
     TIMSK2 |= (1<<OCIE2A); // OUTPUT COMPARE MATCH INTERRUPT ENABLED
     TIFR2 |= (1<<OCF2A); // TIMER INTERRUPT FLAG REGISTER ENABLED
-
-    //When the I-bit in SREG, OCIE2A (Timer/Counter2 compare match interrupt enable), 
-    // and OCF2A are set (1), the Timer/Counter2 compare match interrupt is executed.
-
 }
 
-void scheduler(int *millisec)
+void sysTick(int *millisec)
 {
     if ((*millisec) >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK WHEN VALUE GETS CLOSE TO OVERFLOWING THE 16 BIT INTEGER
     
@@ -50,25 +46,31 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
                 bdcStop();
                 angle_update(0, 'R');
                 break;
-            case 2: button_toggle(&switchPID); break;
-            case 3: button_toggle(&switchTraction); break;
-            case 4: button_toggle(&switchLights); break;
-            case 5: button_toggle(&switchObstacles); break;
-            case 6: 
-                button_toggle(&limitAccel);
-                if (limitAccel == 1) switchPID = 0;
+            case 2: 
+                button_toggle(&switchPID); 
+                if (switchPID == 1) {limitAccel = 0; switchTraction = 0;}
                 break;
-            case 7: break;
-            case 8: break;
-            case 9: break;
-            case 10: break;
-            case 11: break;  
-            case 12: break; 
+            case 3: 
+                button_toggle(&switchTraction); 
+                if (switchTraction == 1) {switchPID = 0; limitAccel = 0;}
+                break;
+            case 4: 
+                button_toggle(&limitAccel);
+                if (limitAccel == 1) {switchPID = 0; switchTraction = 0;}
+                break;
+            case 5: button_toggle(&switchObstacles); break;
+            case 6: button_toggle(&switchLights); break;
+            case 7: break; // BUTTON NOT USED
+            case 8: break; // BUTTON NOT USED
+            case 9: break; // BUTTON NOT USED
+            case 10: break; // BUTTON NOT USED
+            case 11: break; // BUTTON NOT USED
+            case 12: break; // BUTTON NOT USED
             default: break;
         }
     }
 
-    else if (command >= RIGHTMIN && command < RIGHTMAX) // Left joystick left (LX)
+    else if (command >= RIGHTMIN && command < RIGHTMAX) // LEFT JOYSTICK LEFT (LX)
     {
         if (command < (RIGHTMIN + RIGHTOFFSET)) command = (RIGHTMIN + RIGHTOFFSET);
         uint16_t angle = ((90/32.0)*(45 - command));
@@ -77,28 +79,28 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
 
     else if (command == LEFTMIN) angle_update(0, 'R');
 
-    else if (command > LEFTMIN && command < LEFTMAX) // Left joystick right (LX)
+    else if (command > LEFTMIN && command < LEFTMAX) // LEFT JOYSTICK RIGHT (LX)
     {
         if (command > (LEFTMAX - LEFTOFFSET)) command = (LEFTMAX - LEFTOFFSET);
         uint16_t angle = (90/32.0)*(command - 44);
         angle_update(angle, 'L');
     }
 
-    else if (command >= REVERSEMIN && command < REVERSEMAX) // Right joystick down (RX)
+    else if (command >= REVERSEMIN && command < REVERSEMAX) // RIGHT JOYSTICK DOWN (RX)
     {
         if (command < REVERSEMIN + REVERSESPEEDLIMIT) command = (REVERSEMIN + REVERSESPEEDLIMIT);
         int speed = (255/16)*(FORWARDMIN - command);
-        if (switchPID != 1) {*desiredSpeed = speed; *motorDirection = 'F';}
+        if (switchPID != 0 || limitAccel != 0) {*desiredSpeed = speed; *motorDirection = 'F';}
         else bdcTurnRight(speed);
     }    
 
     else if (command == FORWARDMIN) {*motorDirection = 0; *desiredSpeed = 0; bdcStop();}
 
-    else if (command > FORWARDMIN && command < FORWARDMAX) // Right joystick up (RX)
+    else if (command > FORWARDMIN && command < FORWARDMAX) // RIGHT JOYSTICK UP (RX)   
     {
         if (command > (FORWARDMAX - FORWARDSPEEDLIMIT)) command = (FORWARDMAX - FORWARDSPEEDLIMIT);
         int speed = (255/16)*(command - FORWARDMIN);
-        if (switchPID != 1) {*desiredSpeed = speed; *motorDirection = 'B';}
+        if (switchPID != 0 || limitAccel != 0) {*desiredSpeed = speed; *motorDirection = 'B';}
         else bdcTurnLeft(speed);
     }
 

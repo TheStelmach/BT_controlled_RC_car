@@ -18,9 +18,8 @@
 
 
 void sysTick_init();
-void scheduler(int *millisec);
+void sysTick(int *millisec);
 void execute(char *data, char *motorDirection, float *desiredSpeed);
-
 void button_toggle(char *button);
 
 

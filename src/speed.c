@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include "speed.h"
 
+#define SLIP_THRESHOLD 0.2
 int prevTimeRearWheel = 0, prevTimeLeftWheel = 0, prevTimeRightWheel = 0;
 
 void speed_init()
@@ -10,43 +11,67 @@ void speed_init()
     DDRB |= (1<<DDB5);
 
     // MOTOR ENCODER
-    // ENABLE INT0 INTERRUPTS AT FALLING EDGE
+    // ENABLE INT1 INTERRUPTS AT FALLING EDGE
     EICRA |= (1<<ISC11);
     EICRA &= (~(1<<ISC10));
-    DDRD &= (~(1<<INTERRUPT_PIN)); // PIN PD2 ENABLED AS INPUT
-    PORTD |= (1<<INTERRUPT_PIN_ENABLE); // INTERNAL PULLUP ACTIVATED
+    DDRD &= (~(1<<INTERRUPT1_PIN)); // PIN PD2 ENABLED AS INPUT
+    PORTD |= (1<<INTERRUPT1_PIN_ENABLE); // INTERNAL PULLUP ACTIVATED
     EIMSK |= (1<<INT1);
 
-
     // FRONT WHEELS
-    // DDRC &= (~(1<<LEFT_ENC)) & (~(1<<RIGHT_ENC)); 
-
+    // ENABLE INT0 INTERRUPTS AT FALLING EDGE
+    EICRA |= (1<<ISC01);
+    EICRA &= (~(1<<ISC00));
+    DDRD &= (~(1<<INTERRUPT0_PIN)); // PIN PD2 ENABLED AS INPUT
+    PORTD |= (1<<INTERRUPT0_PIN_ENABLE); // INTERNAL PULLUP ACTIVATED
+    EIMSK |= (1<<INT0);
+    DDRC &= (~(1<<DDC1)) & (~(1<<DDC2));
+    PORTC |= (1<<PIN1) | (1<<PIN2); // INTERNAL PULLUPS ACTIVATED
 }
 
-void update_tachometer(int *motorSpeed, int millisec) // uint32_t might not be supported, if problems arise - go back to uint16_t
+void update_tachometer(int *motorSpeed, int millisec) // uint32_t MIGHT NOT WRK. IF ANYTHING, CONVERT EVERY INTEGER VARIABLE TO int
 {
-    //float speed = 60000/(millisec-prevTimeRearWheel); // REVOLUTIONS PER MINUTE
     float speed = (255*79)/(millisec-prevTimeRearWheel);
+    // MULTIPLIED BY 79 TO SCALE THE VALUE. AT MAXIMUM SPEED, IT TAKES 79ms BETWEEN ENCODER INTERRUPTS
     prevTimeRearWheel = millisec;
 /*    if(speed >= 0) *motorSpeed = (uint8_t)speed;
     else *motorSpeed = 0;*/
     *motorSpeed = speed;
 }
 
-void front_wheels(float *leftWheelSpeed, float *rightWheelSpeed, int millisec)
+void front_wheels(int *leftWheelSpeed, int *rightWheelSpeed, int millisec)
 {
-
-    return;
+    static int leftPrevMillisec = 0, rightPrevMillisec = 0;
+    if((PINC & (1 << PINC1)) && !(PINC & (1 << PINC2)))
+    {
+        *leftWheelSpeed = 255*52/(millisec - leftPrevMillisec);
+        // MULTIPLIED BY 52 TO SCALE THE VALUE. AT MAXIMUM SPEED, IT TAKES 79ms BETWEEN INTERRUPTS FOR ONE WHEEL
+        leftPrevMillisec = millisec;
+    }
+    else if((PINC & (1 << PINC2)) && !(PINC & (1 << PINC1)))
+    {
+        *rightWheelSpeed = 255*52/(millisec - rightPrevMillisec);
+        // MULTIPLIED BY 52 TO SCALE THE VALUE. AT MAXIMUM SPEED, IT TAKES 79ms BETWEEN INTERRUPTS FOR ONE WHEEL
+        rightPrevMillisec = millisec;
+    }
+    else if((PINC & (1 << PINC1)) && (PINC & (1 << PINC2)))
+    {
+        *leftWheelSpeed = 255*52/(millisec - leftPrevMillisec);
+        *rightWheelSpeed = 255*52/(millisec - rightPrevMillisec);
+        leftPrevMillisec = millisec;
+        rightPrevMillisec = millisec;
+    }
+    else return;
 }
 
-void update_speedometer(float *actualSpeed, float leftWheelSpeed, float rightWheelSpeed)
+int update_speedometer(int leftWheelSpeed, int rightWheelSpeed)
 {
-    
-    return;
+    return ((leftWheelSpeed + rightWheelSpeed)/2);
 }
 
-float calculate_slip (float actualSpeed)
+float calculate_slip(int actualSpeed, int motorSpeed)
 {
-
-    return 0.0;
+    float slip = (motorSpeed - actualSpeed)/motorSpeed;
+    if(slip >= SLIP_THRESHOLD && slip < 1.0) return slip;
+    else return 0.0;
 }
