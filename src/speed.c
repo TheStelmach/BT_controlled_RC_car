@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "speed.h"
@@ -7,9 +9,6 @@ int prevTimeRearWheel = 0, prevTimeLeftWheel = 0, prevTimeRightWheel = 0;
 
 void speed_init()
 {
-    // USING INBUILT LED FOR INDICATIONS AND TESTING
-    DDRB |= (1<<DDB5);
-
     // MOTOR ENCODER
     // ENABLE INT1 INTERRUPTS AT FALLING EDGE
     EICRA |= (1<<ISC11);
@@ -29,7 +28,7 @@ void speed_init()
     PORTC |= (1<<PIN1) | (1<<PIN2); // INTERNAL PULLUPS ACTIVATED
 }
 
-void update_tachometer(int *motorSpeed, int millisec) // uint32_t MIGHT NOT WRK. IF ANYTHING, CONVERT EVERY INTEGER VARIABLE TO int
+void update_tachometer(int *motorSpeed, int millisec)
 {
     float speed = (255*79)/(millisec-prevTimeRearWheel);
     // MULTIPLIED BY 79 TO SCALE THE VALUE. AT MAXIMUM SPEED, IT TAKES 79ms BETWEEN ENCODER INTERRUPTS

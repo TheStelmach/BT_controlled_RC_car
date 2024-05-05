@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "executer.h"
@@ -11,7 +13,7 @@ limitAccel;
 
 void sysTick_init()
 {
-    //INITIALIZE TIMER 2 IN CTC MODE
+    // INITIALIZE TIMER 2 IN CTC MODE
     // TCCR2A |= (1<<WGM21) | (1<<COM2A0);
     // TCCR2A &= (~(1<<WGM20)) & (~(1<<COM2A1));
     TCCR2A |= (1<<WGM21) | (1<<COM2A0);
@@ -29,7 +31,6 @@ void sysTick_init()
 void sysTick(int *millisec)
 {
     if ((*millisec) >= 60000) {*millisec = 0; return;} // RESTART SYSTEM TICK WHEN VALUE GETS CLOSE TO OVERFLOWING THE 16 BIT INTEGER
-    
     (*millisec)++; 
     return;
 }
@@ -42,30 +43,30 @@ void execute(char *data, char *motorDirection, float *desiredSpeed)
     {
         switch (command)
         { 
-            case 1: 
+            case 1: // REINITIALIZE MOTORS, FOR TESTING PURPOSES
                 bdcStop();
                 angle_update(0, 'R');
                 break;
-            case 2: 
+            case 2: // TOGGLE PID MODE
                 button_toggle(&switchPID); 
                 if (switchPID == 1) {limitAccel = 0; switchTraction = 0;}
                 break;
-            case 3: 
+            case 3: // TOGGLE TRACTION MODE (DOESN'T WORK, HARDWARE NOT FINISHED)
                 button_toggle(&switchTraction); 
                 if (switchTraction == 1) {switchPID = 0; limitAccel = 0;}
                 break;
-            case 4: 
+            case 4: // TOGGLE LIMITED ACCELERATION MODE
                 button_toggle(&limitAccel);
                 if (limitAccel == 1) {switchPID = 0; switchTraction = 0;}
                 break;
-            case 5: button_toggle(&switchObstacles); break;
-            case 6: button_toggle(&switchLights); break;
-            case 7: break; // BUTTON NOT USED
-            case 8: break; // BUTTON NOT USED
-            case 9: break; // BUTTON NOT USED
-            case 10: break; // BUTTON NOT USED
-            case 11: break; // BUTTON NOT USED
-            case 12: break; // BUTTON NOT USED
+            case 5: button_toggle(&switchObstacles); break; // DOESN'T WORK, HARDWARE NOT FINISHED
+            case 6: button_toggle(&switchLights); break; // DOESN'T WORK, HARDWARE NOT FINISHED
+            case 7: toggle_inbuilt_LED(); break; // BUTTON NOT USED
+            case 8: toggle_inbuilt_LED(); break; // BUTTON NOT USED
+            case 9: toggle_inbuilt_LED(); break; // BUTTON NOT USED
+            case 10: toggle_inbuilt_LED(); break; // BUTTON NOT USED
+            case 11: toggle_inbuilt_LED(); break; // BUTTON NOT USED
+            case 12: toggle_inbuilt_LED(); break; // BUTTON NOT USED
             default: break;
         }
     }

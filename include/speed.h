@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #ifndef SPEED_H
 #define SPEED_H
 

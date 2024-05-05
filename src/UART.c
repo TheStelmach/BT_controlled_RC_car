@@ -54,6 +54,7 @@ uint8_t UART_error()
     // MAY WRITE THIS FUNCTION, MAY NOT
 
     //CHECK THE ERROR FLAGS
+
     Due to the buffering of the error flags, the UCSRnA must be read before the
     receive buffer (UDRn), since reading the UDRn I/O location changes the buffer read location. 
     Another equality for the error flags is that they can not be altered by software doing a write

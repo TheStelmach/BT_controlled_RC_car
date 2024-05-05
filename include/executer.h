@@ -1,7 +1,9 @@
+// https://github.com/TheStelmach
+
 #ifndef EXECUTER_H
 #define EXECUTER_H
 
-#define TICK 999u// PERIOD OF 1ms
+#define TICK 999u// PERIOD OF 1mSec
 
 #define LEFTMIN 46
 #define LEFTMAX 80
@@ -15,6 +17,7 @@
 #define REVERSEMIN 80
 #define REVERSEMAX 96
 #define REVERSESPEEDLIMIT 7
+// VALUES TUNED FOR THE SPECIFIC CONTROLLER
 
 
 void sysTick_init();

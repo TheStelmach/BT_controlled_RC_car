@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #ifndef PID_CONTROLLER_H
 #define PID_CONTROLLER_H
 
@@ -7,26 +9,23 @@ typedef struct
 	float Ki;
 	float Kd;
 
-	float tau; // Derivative low-pass filter time constant
+	float tau; // DERIVATIVE LOW-PASS FILTER TIME CONSTANT
 
-	// Output limits
 	int limMin;
 	int limMax;
 	
-	// Integrator limits
 	int limMinInt;
 	int limMaxInt;
 
-	int T; // Sample time (in seconds)
+	int T; // SAMPLE TIME
 
-	// Controller "memory"
 	float integrator;
-	float prevDeviation; // Required for integrator
+	float prevDeviation;
 	float differentiator;
-	float prevMotorSpeed; // Required for differentiator
+	float prevMotorSpeed;
 	int prevMillisec;
 
-	int out; // Controller output
+	int out;
 
 } PIDController;
 

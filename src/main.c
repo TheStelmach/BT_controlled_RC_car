@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
@@ -34,7 +36,7 @@ void setup()
 {
     cli();
     sysTick_init();
-    UART_init(); // not needed, can use arduino's serial, but works so might as well...
+    UART_init();
     queue_init();
     periph_init();
     servo_init();
@@ -42,7 +44,7 @@ void setup()
     speed_init();
     PIDController_init(&pid, millisec);
     tw_init(TW_FREQ_250K, 1);
-    // obstAvoid_init();
+    // obstAvoid_init(); // PART OF peripherals.h & .c
     sei();
 }
 
@@ -95,12 +97,12 @@ void loop()
 
 ISR (USART_RX_vect)
 { // DATA FROM BLUETOOTH
-    data = UART_Receive(); // FOR UART TESTING PURPOSES
+    data = UART_Receive();
     queue_write(data);
 }
 
 ISR (TIMER2_COMPA_vect)
-{ // SYSTICK IN EXECUTER
+{ // SYSTICK IN EXECUTER FILE
     sysTick(&millisec);
 }
 
@@ -115,17 +117,23 @@ ISR (INT0_vect)
     actualSpeed = update_speedometer(leftWheelSpeed, rightWheelSpeed);
 }
 
+
+
+
 /*
-
+Plan for today
+--------------
 Nazar
+* Finish traction functions +
+* Remove unnecessary global variables 
+* Make a video, as long as everything works +
+* Check the report +
+* Submit 471
 
-- Make a video, as long as everything works
-- Check the report
-
-John
-- Debug offense and defense of 472
-- Run a simulation test
-- Make a video
-- Check the report
+Ali
+* Debug offense and defense for 472
+* Run a simulation test
+* Make a video together +
+* Check the 472 report +
 
 */

@@ -32,7 +32,7 @@ void angle_update(uint16_t angle, char dir) // UPDATE ANGLE
     uint16_t degToMicroSec = (((uint16_t)MAXANGLE-(uint16_t)MINANGLE)/180)*(angle);
     if (dir == 'L') position = MIDANGLE - degToMicroSec;
     else if (dir == 'R') position = MIDANGLE + degToMicroSec;
-    else return; // ERROR OCCURS HERE, FUNCTION IS HALTED WITHOUT UPDATING THE POSITION
+    else return; // ERROR OCCURS HERE, FUNCTION HALTS WITHOUT UPDATING THE POSITION
 
     OCR1AH = (position) >> 8;
     OCR1AL = (position);

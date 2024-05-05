@@ -1,3 +1,5 @@
+// https://github.com/TheStelmach
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "peripherals.h"
@@ -10,13 +12,12 @@ void periph_init() // ALL PERIPHERALS INITIALIZED HERE
 
     // HEADLIGHTS
 
+    // TOFs
+
+
 }
 
-void toggle_inbuilt_LED() 
-{ 
-    if (PORTB & 0x20) PORTB &= (~(1<<LEDENABLE));
-    else PORTB |= (1<<LEDENABLE);
-}
+void toggle_inbuilt_LED() {PORTB ^= (1<<LEDENABLE);}
 
 void toggle_headlights()
 {
