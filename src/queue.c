@@ -22,10 +22,10 @@ void queue_write (char data)
 {
 	if(QueueSize >= QUEUECAPACITY) return; // FAILURE
 	else 
-    {
+	{
 		QueueStorage[QueueWritePtr++] = data; 
 		if(QueueWritePtr >= QUEUECAPACITY) 
-        {
+        	{
 			QueueWritePtr = 0; 
 		}
 		QueueSize++; 
@@ -41,7 +41,7 @@ void queue_read (char *data)
 		QueueStorage[QueueReadPtr] = 0; // DELETE THE VALUE
 		++QueueReadPtr; // SHIFT THE POSITION IN THE QUEUE
 	    if(QueueReadPtr >= QUEUECAPACITY) 
-        {
+		{
 		    QueueReadPtr = 0; 
 	    }
 	    QueueSize--; 
