@@ -116,24 +116,3 @@ ISR (INT0_vect)
     front_wheels(&leftWheelSpeed, &rightWheelSpeed, millisec);
     actualSpeed = update_speedometer(leftWheelSpeed, rightWheelSpeed);
 }
-
-
-
-
-/*
-Plan for today
---------------
-Nazar
-* Finish traction functions +
-* Remove unnecessary global variables 
-* Make a video, as long as everything works +
-* Check the report +
-* Submit 471
-
-Ali
-* Debug offense and defense for 472
-* Run a simulation test
-* Make a video together +
-* Check the 472 report +
-
-*/
